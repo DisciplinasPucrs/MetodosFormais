@@ -9,4 +9,3 @@ method Exemplo(y:nat) returns (x:nat)
 
 // A condição de verificação para a correção é:
 // y <= 4 ==> y + 1 <= 5
-// A prova da veracidade é trivial

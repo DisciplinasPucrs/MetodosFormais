@@ -17,6 +17,7 @@ method Exemplo(n:nat) returns (f:nat)
     while i <= n
       invariant i - 1 <= n
       invariant f == Fact(i-1)
+      //decreases n-i
     {
         assert i <= n && i - 1 <= n && f == Fact(i-1);
         assert i <= n && f*i == Fact(i);

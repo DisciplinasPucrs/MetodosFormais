@@ -4,13 +4,13 @@ method SumMax(x:int, y:int) returns (s:int, m:int) //Podemos retornar múltiplos
  ensures x <= m && y <= m
  ensures m == x || m == y
 {
-    s := x + y;
-    if x < y
-    {
-        m := y;
-    }
-    else
-    {
-        m := x;
-    }
+  s := x + y;
+  if x < y
+  {
+    m := y;
+  }
+  else
+  {
+    m := x;
+  }
 }
