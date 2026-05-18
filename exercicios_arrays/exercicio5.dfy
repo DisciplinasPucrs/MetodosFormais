@@ -1,31 +1,46 @@
-ghost function Product(a: array<int>): int
+ghost predicate sorted(a: array<int>)
   reads a
 {
-    ProductAux(a, 0, a.Length-1)
+  forall j, k :: 0 <= j < k < a.Length ==> a[j] <= a[k]
 }
 
-ghost function ProductAux(a: array<int>, from: nat, to: int): int
-  requires to < a.Length
-  reads a
+method BinarySearch(a: array<int>, value: int) returns (index: int)
+  requires sorted(a)
+  ensures 0 <= index ==> index < a.Length && a[index] == value
+  ensures index < 0 ==> forall k :: 0 <= k < a.Length ==> a[k] != value
 {
-    if from > to
-    then 1
-    else if from == to
-         then a[to]
-         else a[to] * ProductAux(a, from, to-1)
-}
-
-method ProductImpl(a: array<int>) returns (p:int)
-  requires a.Length > 0
-  ensures p == Product(a)
-{
-    p := 1;
-    var i := 0;
-    while i < a.Length
-      invariant 0 <= i <= a.Length
-      invariant p == ProductAux(a, 0, i-1)
+    var low, high := 0, a.Length;
+    while low < high
+      invariant 0 <= low <= high <= a.Length
+      invariant forall i :: 0 <= i < a.Length && !(low <= i < high) ==> a[i] != value
     {
-        p := p * a[i];
-        i := i + 1;
+      var mid := (low + high) / 2;
+      if a[mid] < value
+      {
+        low := mid + 1;
+      }
+      else if value < a[mid]
+      {
+        high := mid;
+      }
+      else
+      {
+        return mid;
+      }
     }
+    return -1;
+}
+
+method Main()
+{
+  var numeros := new int[5];
+  numeros[0] := 1;
+  numeros[1] := 3;
+  numeros[2] := 4;
+  numeros[3] := 6;
+  numeros[4] := 7;
+  var resultado := BinarySearch(numeros,1);
+  assert numeros[0] == 1;
+  assert resultado >= 0;
+  assert numeros[resultado] == 1;
 }
