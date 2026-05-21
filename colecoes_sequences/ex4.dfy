@@ -1,5 +1,6 @@
 // palavra contém uma string
 // remover p caracteres a partir da posição ini até fim
+// você consegue perceber onde a especificação deixou em aberto o estado final do array?
 method Delete(palavra:array<char>, ini:nat, fim:nat, p:nat)
   requires fim <= palavra.Length
   requires ini+p <= fim
