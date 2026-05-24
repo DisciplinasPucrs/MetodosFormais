@@ -20,7 +20,7 @@ ghost function SomatorioR(xs: seq<int>): int
 //A ordem que o array é percorrido está de acordo com o unfold da recursão
 
 method SomarDirEsq(a: array<int>) returns (s: int)
-ensures s == Somatorio(a[..])
+  ensures s == Somatorio(a[..])
 {
   s := 0;
   var i := 0;
@@ -34,7 +34,7 @@ ensures s == Somatorio(a[..])
 }
 
 method SomarDirEsqV2(a: array<int>) returns (s: int)
-ensures s == Somatorio(a[..])
+  ensures s == Somatorio(a[..])
 {
   s := 0;
   var i := a.Length;
@@ -51,17 +51,17 @@ ensures s == Somatorio(a[..])
 //A ordem que o array é percorrido NÃO está de acordo com o unfold da recursão
 /*
 method SomarEsqDir(a: array<int>) returns (s: int)
-ensures s == Somatorio(a[..])
+  ensures s == Somatorio(a[..])
 {
-    s := 0;
-    var i := 0;
-    while i < a.Length
+  s := 0;
+  var i := 0;
+  while i < a.Length
     invariant 0 <= i <= a.Length
     invariant s == Somatorio(a[..i])
-    {
-        s := s + a[i];
-        i := i + 1;
-    }
+  {
+    s := s + a[i];
+    i := i + 1;
+  }
 }
 */
 
@@ -73,19 +73,19 @@ ensures s == Somatorio(a[..])
 //como o processo de dedução ocorre na lógica de Hoare
 /*
 method SomarEsqDir(a: array<int>) returns (s: int)
-ensures s == SomatorioR(a[..])
+  ensures s == SomatorioR(a[..])
 {
-    s := 0;
-    var i := 0;
-    while i < a.Length
+  s := 0;
+  var i := 0;
+  while i < a.Length
     invariant 0 <= i <= a.Length
     invariant s == SomatorioR(a[..i])
-    {
-        assert a[..i+1][..i] == a[..i];
-        s := s + a[i];
-        i := i + 1;
-    }
-    assert a[..i] == a[..];
+  {
+    assert a[..i+1][..i] == a[..i];
+    s := s + a[i];
+    i := i + 1;
+  }
+  assert a[..i] == a[..];
 }
 */
 
@@ -93,7 +93,7 @@ ensures s == SomatorioR(a[..])
 //Versão alternativa
 
 ghost function SomatorioAte(xs: seq<int>, n:int): int
-requires 0 <= n <= |xs|
+  requires 0 <= n <= |xs|
 {
   if n == 0
   then 0
@@ -101,7 +101,7 @@ requires 0 <= n <= |xs|
 }
 
 method SomarV2(a: array<int>) returns (s: int)
-ensures s == SomatorioAte(a[..], a.Length)
+  ensures s == SomatorioAte(a[..], a.Length)
 {
   s := 0;
   var i := 0;
