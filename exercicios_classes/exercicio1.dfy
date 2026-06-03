@@ -33,3 +33,7 @@ Afinal, é possível que o construtor tenha inicializado o sh.intarray com algum
 Precisamos informar ao Main que o construtor do WrapArray aloca um novo array de ints.
 A sintaxe para fazer isso é adicionar uma poscondição ao construtor que diz fresh(intarray).
 */
+/*
+Além do problema do frame, observe que não foi especificado nenhum tipo de poscondição dos métodos.
+Logo, não se consegue verificar nada sobre o resultado do uso dos métodos dentro do Main.
+*/
