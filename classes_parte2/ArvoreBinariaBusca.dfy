@@ -88,7 +88,7 @@ class Nodo<T>
            else None
   }
 
-  method Adicionar(chave:int, valor:T)
+  method {:timeLimit 0} Adicionar(chave:int, valor:T)
     requires Valid()
     modifies Repr
     ensures Valid() && fresh(Repr - old(Repr))
