@@ -6,10 +6,25 @@ ghost predicate Menor(a:set<int>, b:set<int>) {
 
 ghost function Uniao<Data>(m:map<int, Data>, n:Nodo?<Data>): map<int, Data>
   reads n
+  ensures var u := Uniao(m, n); |m.Keys| <= |u.Keys|
 {
   if n == null
   then m
-  else m + n.Mapa
+  else
+    var u := m + n.Mapa;
+    SubsetCardinality(m.Keys, u.Keys);
+    u
+}
+
+lemma SubsetCardinality(a: set, b: set)
+  requires a <= b
+  ensures |a| <= |b|
+{
+  if a != {}
+  {
+    var x :| x in a;
+    SubsetCardinality(a - {x}, b - {x});
+  }
 }
 
 class Nodo<T>
@@ -49,19 +64,67 @@ class Nodo<T>
   constructor (chave:int, valor:T)
     ensures Valid() && fresh(Repr)
     ensures Mapa == map[chave := valor]
+  {
+    this.chave := chave;
+    this.valor := valor;
+    esq := null;
+    dir := null;
+    Mapa := map[chave := valor];
+    Repr := {this};
+  }
 
   function Buscar(chave:int):Option<T>
     requires Valid()
     reads Repr
     ensures chave in Mapa.Keys ==> Buscar(chave) == Some(Mapa[chave])
     ensures chave !in Mapa.Keys ==> Buscar(chave) == None
+  {
+    if chave == this.chave
+    then Some(valor)
+    else if chave < this.chave && esq != null
+      then esq.Buscar(chave)
+      else if chave > this.chave && dir != null
+           then dir.Buscar(chave)
+           else None
+  }
 
   method Adicionar(chave:int, valor:T)
     requires Valid()
     modifies Repr
     ensures Valid() && fresh(Repr - old(Repr))
     ensures Mapa == old(Mapa)[chave := valor]
-
+    decreases Repr
+  {
+    if chave == this.chave
+    {
+      this.valor := valor;
+    }
+    else if chave < this.chave
+    {
+      if esq == null
+      {
+        esq := new Nodo(chave, valor);
+      }
+      else
+      {
+        esq.Adicionar(chave, valor);
+      }
+      Repr := Repr + esq.Repr;
+    }
+    else
+    {
+      if dir == null
+      {
+        dir := new Nodo(chave, valor);
+      }
+      else
+      {
+        dir.Adicionar(chave, valor);
+      }
+      Repr := Repr + dir.Repr;
+    }
+    Mapa := Mapa[chave := valor];
+  }
 }
 
 class ArvoreBinariaBusca<T>
@@ -96,10 +159,27 @@ class ArvoreBinariaBusca<T>
     reads Repr
     ensures chave in Mapa.Keys ==> Buscar(chave) == Some(Mapa[chave])
     ensures chave !in Mapa.Keys ==> Buscar(chave) == None
-    
+  {
+    if raiz == null
+    then None
+    else raiz.Buscar(chave)
+  }
+
   method Adicionar(chave:int, valor:T)
     requires Valid()
     modifies Repr
     ensures Valid() && fresh(Repr - old(Repr))
     ensures Mapa == old(Mapa)[chave := valor]
+  {
+    if raiz == null
+    {
+      raiz := new Nodo(chave, valor);
+    }
+    else
+    {
+        raiz.Adicionar(chave, valor);
+    }
+    Mapa := Mapa[chave := valor];
+    Repr := Repr + raiz.Repr;
+  }
 }
