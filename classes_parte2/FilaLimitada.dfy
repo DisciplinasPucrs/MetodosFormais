@@ -1,13 +1,14 @@
-class FilaNat
+class FilaNatLimitada
 {
-  //Implementação
-  var a: array<nat>
-  var tamanho: nat
-  const max: nat
   //Abstração
   ghost var Conteudo: seq<nat>
   ghost const TamanhoMaximo: nat
   ghost var Repr: set<object>
+
+  //Implementação
+  var a: array<nat>
+  var tamanho: nat
+  const max: nat
 
   //Invariante de classe
   ghost predicate Valid()
@@ -86,7 +87,7 @@ class FilaNat
 
 method Main()
 {
-  var fila := new FilaNat(5);
+  var fila := new FilaNatLimitada(5);
   assert fila.Conteudo == [];
   assert fila.TamanhoMaximo == 5;
   var q := fila.Quantidade();

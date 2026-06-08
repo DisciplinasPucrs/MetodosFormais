@@ -1,17 +1,20 @@
-class Node<T(0)> {
+class Node<T(0)>
+{
+  //Implementação
   var data: T
   var next: Node?<T>
-
-  ghost var tailContents: seq<T>
+  //Abstração
+  ghost var nextContents: seq<T>
   ghost var Repr: set<object>
 
   ghost predicate Valid()
     reads this, Repr
+    ensures Valid() ==> this in Repr
   {
-    this in Repr &&
-    (next != null ==> next in Repr && next.Repr <= Repr) &&
-    (next == null ==> tailContents == []) &&
-    (next != null ==> tailContents == [next.data] + next.tailContents)
+    && this in Repr
+    && (next != null ==> next in Repr && next.Repr <= Repr)
+    && (next == null ==> nextContents == [])
+    && (next != null ==> nextContents == [next.data] + next.nextContents)
   }
 
   constructor ()
@@ -19,35 +22,40 @@ class Node<T(0)> {
     ensures next == null
   {
     next := null;
-    tailContents := [];
+    nextContents := [];
     Repr := {this};
   }
 }
 
-class Queue<T(0)> {
+class Queue<T(0)>
+{
+  //Implementação
   var head: Node<T>
   var tail: Node<T>
-
+  //Abstração
   ghost var contents: seq<T>
   ghost var Repr: set<object>
-  ghost var spine: set<Node<T>>
+  ghost var chaining: set<Node<T>>
 
   ghost predicate Valid()
     reads this, Repr
+    ensures Valid() ==> this in Repr
   {
-    this in Repr && spine <= Repr &&
-    head in spine &&
-    tail in spine &&
-    tail.next == null &&
-    (forall n ::
-      n in spine ==>
-        n.Repr <= Repr && this !in n.Repr &&
-        n.Valid() &&
-        (n.next == null ==> n == tail)) &&
-    (forall n ::
-      n in spine ==>
-        n.next != null ==> n.next in spine) &&
-    contents == head.tailContents
+    && this in Repr
+    && chaining <= Repr
+    && head in chaining
+    && tail in chaining
+    && tail.next == null
+    && (forall n :: n in chaining ==>
+      //nodo não está presente na representação do seu sucessor
+      //isso implica no encademento não ser cíclico 
+      && n.Repr <= Repr
+      && this !in n.Repr
+      && n.Valid()
+      && (n.next == null ==> n == tail)
+    )
+    && (forall n :: n in chaining ==> n.next != null ==> n.next in chaining)
+    && contents == head.nextContents
   }
 
   constructor ()
@@ -57,16 +65,17 @@ class Queue<T(0)> {
     var n: Node<T> := new Node<T>();
     head := n;
     tail := n;
-    contents := n.tailContents;
+    contents := n.nextContents;
     Repr := {this} + n.Repr;
-    spine := {n};
+    chaining := {n};
   }
 
-  method IsEmpty() returns (isEmpty: bool)
+  predicate IsEmpty()
     requires Valid()
-    ensures isEmpty <==> |contents| == 0
+    reads Repr
+    ensures IsEmpty() <==> |contents| == 0
   {
-    isEmpty := head == tail;
+    head == tail
   }
 
   method Enqueue(t: T)
@@ -80,25 +89,26 @@ class Queue<T(0)> {
     tail.next := n;
     tail := n;
 
-    forall m | m in spine {
-      m.tailContents := m.tailContents + [t];
+    forall m | m in chaining {
+      m.nextContents := m.nextContents + [t];
     }
-    contents := head.tailContents;
+    contents := head.nextContents;
 
-    forall m | m in spine {
+    forall m | m in chaining {
       m.Repr := m.Repr + n.Repr;
     }
     Repr := Repr + n.Repr;
 
-    spine := spine + {n};
+    chaining := chaining + {n};
   }
 
-  method Front() returns (t: T)
+  function Front():T
     requires Valid()
     requires 0 < |contents|
-    ensures t == contents[0]
+    reads Repr
+    ensures Front() == contents[0]
   {
-    t := head.next.data;
+    head.next.data
   }
 
   method Dequeue()
@@ -110,7 +120,7 @@ class Queue<T(0)> {
   {
     var n := head.next;
     head := n;
-    contents := n.tailContents;
+    contents := n.nextContents;
   }
 }
 

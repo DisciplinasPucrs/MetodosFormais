@@ -1,4 +1,4 @@
-class {:autocontracts}  FilaNat
+class {:autocontracts}  FilaNatLimitada
 {
   //Implementação
   var a: array<nat>
@@ -14,7 +14,7 @@ class {:autocontracts}  FilaNat
     max > 0 &&
     a.Length == max &&
     0 <= cauda <= max &&
-    Conteudo == a[0..cauda] &&
+    Conteudo == a[..cauda] &&
     TamanhoMaximo == max
   }
 
@@ -68,7 +68,7 @@ class {:autocontracts}  FilaNat
 
 method Main()
 {
-  var fila := new FilaNat(5);
+  var fila := new FilaNatLimitada(5);
   fila.Enfileira(1);
   fila.Enfileira(2);
   assert fila.Conteudo == [1,2];

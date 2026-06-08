@@ -1,13 +1,13 @@
-class FilaNat
+class FilaNatLimitada
 {
-  //Implementação
-  var a: array<nat>
-  var cauda: nat
-  const max: nat
   //Abstração
   ghost var Conteudo: seq<nat>
   ghost const TamanhoMaximo: nat
   ghost const Repr: set<object> //é possível usar const pois nesse caso Repr nunca será alterado
+  //Implementação
+  var a: array<nat>
+  var cauda: nat
+  const max: nat
 
   //Invariante de classe
   ghost predicate Valid()
@@ -19,7 +19,7 @@ class FilaNat
     max > 0 &&
     a.Length == max &&
     0 <= cauda <= max &&
-    Conteudo == a[0..cauda] &&
+    Conteudo == a[..cauda] &&
     TamanhoMaximo == max
   }
 
@@ -85,7 +85,7 @@ class FilaNat
 
 method Main()
 {
-  var fila := new FilaNat(5);
+  var fila := new FilaNatLimitada(5);
   fila.Enfileira(1);
   fila.Enfileira(2);
   assert fila.Conteudo == [1,2];
