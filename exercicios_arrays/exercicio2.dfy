@@ -21,8 +21,9 @@ method FindMaxIndex(a:array<int>) returns (i:int)
 method Main()
 {
   var a := new int[5];
-  a[0], a[1], a[2], a[3], a[4] := 3, 0, 7, -1, 7;
+  a[0], a[1], a[2], a[3], a[4] := 100, 0, 7, -1, 7;
+  assert a[0] == 100; //necessário
   var i := FindMaxIndex(a);
-  assert a[i] == 7;
+  assert a[i] == 100;
   //assert i == 2; //necessita de mais informação para realizar a prova
 }
