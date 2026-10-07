@@ -46,8 +46,8 @@ method PotenciaRapida(a:nat, b:nat) returns (r:nat)
 }
 
 lemma PotLema(a:nat, b:nat)
-  ensures b % 2 == 0 ==> Pot(a,b) == Pot(a*a,b/2)
-  ensures b % 2 != 0 ==> Pot(a,b) == a * Pot(a*a,(b-1)/2)
+  ensures Par(b) ==> Pot(a,b) == Pot(a*a,b/2)
+  ensures !Par(b) ==> Pot(a,b) == a * Pot(a*a,(b-1)/2)
 {
   if b % 2 == 0 && b > 0
   {
